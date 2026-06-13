@@ -11,7 +11,7 @@ require "shellwords"
 EXAMPLE_DIR = __dir__
 FORK_ROOT   = File.join(EXAMPLE_DIR, "picoruby")
 BUILD_DIR   = File.join(EXAMPLE_DIR, "build")
-HOST_BIN    = File.join(BUILD_DIR, "host", "bin", "fmdemo")
+HOST_BIN    = File.join(BUILD_DIR, "host", "bin", "picoruby-foundation-model-example")
 CONFIG      = File.join(EXAMPLE_DIR, "build_config.rb")
 PICORUBY_REPO = "https://github.com/picoruby/picoruby"
 

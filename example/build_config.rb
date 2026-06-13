@@ -1,8 +1,9 @@
 # Host (POSIX) MicroRuby build that bundles picoruby-foundation-model into a
 # single self-contained binary. Driven by example/Rakefile, which clones
 # upstream picoruby and sets MRUBY_CONFIG to this file and MRUBY_BUILD_DIR to
-# example/build. The picoruby-bin-fmdemo gem embeds app.rb and provides the
-# `fmdemo` binary (no script file is read at runtime).
+# example/build. The picoruby-foundation-model-example gem embeds app.rb and
+# provides the `picoruby-foundation-model-example` binary (no script file is
+# read at runtime).
 MRuby::Build.new do |conf|
   conf.toolchain :gcc
 
@@ -20,10 +21,14 @@ MRuby::Build.new do |conf|
   conf.picoruby   # select the full mruby VM (PICORB_VM_MRUBY)
 
   conf.gembox "mruby-posix"
-  conf.gembox "minimum"
+  # `minimum` gembox without picoruby-bin-picoruby — we don't want its extra
+  # `picoruby` REPL binary, only the build essentials (compiler + mrbc + VM).
+  conf.gem core: "mruby-compiler2"
+  conf.gem core: "mruby-bin-mrbc2"
+  conf.gem core: "picoruby-mruby"
   conf.gembox "core"
   conf.gembox "stdlib"
 
   conf.gem github: 'bash0C7/picoruby-foundation-model', branch: 'main'
-  conf.gem "#{__dir__}/mrbgems/picoruby-bin-fmdemo"
+  conf.gem "#{__dir__}/mrbgems/picoruby-foundation-model-example"
 end
