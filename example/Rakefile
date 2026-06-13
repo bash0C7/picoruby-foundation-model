@@ -1,20 +1,18 @@
 # Self-contained build/run example for picoruby-foundation-model.
-# Clones upstream picoruby, builds a host MicroRuby runtime that bundles this
-# gem, and runs example/app.rb on it.
+# Clones upstream picoruby and builds a single self-contained `fmdemo` binary
+# with app.rb embedded (see mrbgems/picoruby-bin-fmdemo).
 #
 #   rake          # == rake build
 #   rake build    # clone picoruby (if needed) + build into example/build
-#   rake run      # run app.rb on the built runtime (override with APP=path)
-#   rake clean    # remove example/build and the gem's Swift artifacts
+#   rake run      # run the embedded-app binary
+#   rake clean    # remove example/build
 require "shellwords"
 
 EXAMPLE_DIR = __dir__
-GEM_ROOT    = File.expand_path("..", EXAMPLE_DIR)
 FORK_ROOT   = File.join(EXAMPLE_DIR, "picoruby")
 BUILD_DIR   = File.join(EXAMPLE_DIR, "build")
-HOST_BIN    = File.join(BUILD_DIR, "host", "bin", "picoruby")
+HOST_BIN    = File.join(BUILD_DIR, "host", "bin", "fmdemo")
 CONFIG      = File.join(EXAMPLE_DIR, "build_config.rb")
-GEM_EXT     = File.join(GEM_ROOT, "ext")
 PICORUBY_REPO = "https://github.com/picoruby/picoruby"
 
 task :picoruby do
@@ -22,7 +20,7 @@ task :picoruby do
   sh "git", "clone", "--recursive", PICORUBY_REPO, FORK_ROOT
 end
 
-desc "Clone picoruby (if needed) and build the host runtime into example/build"
+desc "Clone picoruby (if needed) and build the single binary into example/build"
 task build: :picoruby do
   cmd = "cd #{FORK_ROOT.shellescape} && rake"
   sh({ "MRUBY_CONFIG" => CONFIG, "MRUBY_BUILD_DIR" => BUILD_DIR }, cmd)
@@ -30,17 +28,15 @@ task build: :picoruby do
   puts "Built: #{HOST_BIN}"
 end
 
-desc "Run a Ruby app on the built runtime (default APP=example/app.rb)"
+desc "Run the single binary (app.rb is embedded)"
 task :run do
   raise "Not built. Run `rake build` first." unless File.executable?(HOST_BIN)
-  exec(HOST_BIN, ENV["APP"] || File.join(EXAMPLE_DIR, "app.rb"))
+  exec(HOST_BIN)
 end
 
-desc "Remove example/build and the gem's Swift build artifacts"
+desc "Remove example/build"
 task :clean do
   rm_rf BUILD_DIR
-  rm_rf File.join(GEM_EXT, ".build")
-  rm_f  File.join(GEM_EXT, "FoundationModelMac-Swift.h")
 end
 
 task default: :build

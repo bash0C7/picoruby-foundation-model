@@ -32,14 +32,21 @@ FoundationModel.generate(prompt)
 
 ## Try it
 
-The `example/` directory builds a standalone host runtime against upstream
-[picoruby/picoruby](https://github.com/picoruby/picoruby) and runs a sample:
+The `example/` directory builds a single self-contained binary against upstream
+[picoruby/picoruby](https://github.com/picoruby/picoruby). The sample `app.rb`
+is embedded into the binary (via the `picoruby-bin-fmdemo` gem) and the Swift
+glue is statically linked, so the result is one file with no script and no
+in-tree dylib to ship alongside:
 
 ```sh
 cd example
-rake build   # clones picoruby (first run) and builds into example/build
-rake run     # runs example/app.rb on the built runtime
+rake build   # clones picoruby (first run) and builds example/build/host/bin/fmdemo
+rake run     # runs the binary (app.rb is baked in)
 ```
+
+The binary depends only on macOS system pieces (the Swift runtime in
+`/usr/lib/swift` and the `FoundationModels` framework), so it runs on any
+macOS 26 machine with Apple Intelligence — copy it elsewhere and it still works.
 
 ## Usage
 
