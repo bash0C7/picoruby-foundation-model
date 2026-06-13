@@ -49,9 +49,9 @@ Add the gem to your PicoRuby build configuration:
 conf.gem github: 'bash0C7/picoruby-foundation-model'
 ```
 
-Linking the Swift dynamic library into the final `picoruby` executable is the
-responsibility of your build configuration's `conf.linker` settings — the
-per-gem spec linker options do not reach the executable link step.
+That single line is all that is needed. The gem's `mrbgem.rake` builds the Swift
+package and registers the dynamic library with the build linker itself, so no
+manual `conf.linker` setup is required.
 
 ## License
 

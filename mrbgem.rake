@@ -18,12 +18,16 @@ MRuby::Gem::Specification.new('picoruby-foundation-model') do |spec|
   # C binding needs the generated header.
   spec.cc.include_paths << ext_dir
 
-  # NOTE: linking the Swift dylib into the `picoruby` executable must be done in
-  # your build configuration's conf.linker — per-gem spec.linker.* does not reach
-  # the executable link step.
+  # Link the Swift dylib into the `picoruby` executable. picoruby-bin-picoruby's
+  # exe link rule reads the build-level linker (not per-gem spec.linker), so we
+  # register on build.linker here — that way consumers only need `conf.gem`, no
+  # manual conf.linker step. rpath lets the dylib resolve at runtime.
   #
-  # Constraints (macOS host experiment): `swift build` runs at spec-eval time on
-  # every rake invocation (incremental, usually a no-op); the runtime rpath
-  # points into the in-tree ext/.build/release, so the built `picoruby` binary
-  # is not relocatable/distributable as-is.
+  # Constraint (macOS host experiment): the rpath points into the in-tree
+  # ext/.build/release, so the built `picoruby` binary is not
+  # relocatable/distributable as-is.
+  lib_dir = "#{ext_dir}/.build/release"
+  build.linker.flags     << "-L#{lib_dir}"
+  build.linker.libraries << package
+  build.linker.flags     << "-Wl,-rpath,#{lib_dir}"
 end

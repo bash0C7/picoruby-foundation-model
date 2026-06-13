@@ -1,8 +1,6 @@
 # Host (POSIX) MicroRuby build that bundles picoruby-foundation-model.
 # Driven by example/Rakefile, which clones upstream picoruby and sets
 # MRUBY_CONFIG to this file and MRUBY_BUILD_DIR to example/build.
-GEM_ROOT = File.expand_path("..", __dir__)
-
 MRuby::Build.new do |conf|
   conf.toolchain :gcc
 
@@ -25,15 +23,5 @@ MRuby::Build.new do |conf|
   conf.gembox "stdlib"
   conf.gem core: "picoruby-bin-picoruby"   # provides the `picoruby <file.rb>` runner
 
-  conf.gem GEM_ROOT
-
-  # Link the Swift Apple Intelligence dylib into the `picoruby` executable.
-  # picoruby-bin-picoruby's exe link rule runs the build-level linker without
-  # per-gem spec.linker attrs, so the linkage must live on conf.linker. The
-  # dylib is produced by the gem's mrbgem.rake `swift build` step; rpath lets it
-  # resolve at runtime.
-  fmm_lib_dir = "#{GEM_ROOT}/ext/.build/release"
-  conf.linker.flags     << "-L#{fmm_lib_dir}"
-  conf.linker.libraries << "FoundationModelMac"
-  conf.linker.flags     << "-Wl,-rpath,#{fmm_lib_dir}"
+  conf.gem github: 'bash0C7/picoruby-foundation-model'
 end
