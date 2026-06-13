@@ -23,5 +23,5 @@ MRuby::Build.new do |conf|
   conf.gembox "stdlib"
   conf.gem core: "picoruby-bin-picoruby"   # provides the `picoruby <file.rb>` runner
 
-  conf.gem github: 'bash0C7/picoruby-foundation-model'
+  conf.gem github: 'bash0C7/picoruby-foundation-model', branch: 'main'
 end

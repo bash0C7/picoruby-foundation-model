@@ -46,7 +46,7 @@ rake run     # runs example/app.rb on the built runtime
 Add the gem to your PicoRuby build configuration:
 
 ```ruby
-conf.gem github: 'bash0C7/picoruby-foundation-model'
+conf.gem github: 'bash0C7/picoruby-foundation-model', branch: 'main'
 ```
 
 That single line is all that is needed. The gem's `mrbgem.rake` builds the Swift
