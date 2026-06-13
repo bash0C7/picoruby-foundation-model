@@ -1,0 +1,46 @@
+# Self-contained build/run example for picoruby-foundation-model.
+# Clones upstream picoruby, builds a host MicroRuby runtime that bundles this
+# gem, and runs example/app.rb on it.
+#
+#   rake          # == rake build
+#   rake build    # clone picoruby (if needed) + build into example/build
+#   rake run      # run app.rb on the built runtime (override with APP=path)
+#   rake clean    # remove example/build and the gem's Swift artifacts
+require "shellwords"
+
+EXAMPLE_DIR = __dir__
+GEM_ROOT    = File.expand_path("..", EXAMPLE_DIR)
+FORK_ROOT   = File.join(EXAMPLE_DIR, "picoruby")
+BUILD_DIR   = File.join(EXAMPLE_DIR, "build")
+HOST_BIN    = File.join(BUILD_DIR, "host", "bin", "picoruby")
+CONFIG      = File.join(EXAMPLE_DIR, "build_config.rb")
+GEM_EXT     = File.join(GEM_ROOT, "ext")
+PICORUBY_REPO = "https://github.com/picoruby/picoruby"
+
+task :picoruby do
+  next if Dir.exist?(File.join(FORK_ROOT, ".git"))
+  sh "git", "clone", "--recursive", PICORUBY_REPO, FORK_ROOT
+end
+
+desc "Clone picoruby (if needed) and build the host runtime into example/build"
+task build: :picoruby do
+  cmd = "cd #{FORK_ROOT.shellescape} && rake"
+  sh({ "MRUBY_CONFIG" => CONFIG, "MRUBY_BUILD_DIR" => BUILD_DIR }, cmd)
+  raise "build finished but #{HOST_BIN} is missing" unless File.executable?(HOST_BIN)
+  puts "Built: #{HOST_BIN}"
+end
+
+desc "Run a Ruby app on the built runtime (default APP=example/app.rb)"
+task :run do
+  raise "Not built. Run `rake build` first." unless File.executable?(HOST_BIN)
+  exec(HOST_BIN, ENV["APP"] || File.join(EXAMPLE_DIR, "app.rb"))
+end
+
+desc "Remove example/build and the gem's Swift build artifacts"
+task :clean do
+  rm_rf BUILD_DIR
+  rm_rf File.join(GEM_EXT, ".build")
+  rm_f  File.join(GEM_EXT, "FoundationModelMac-Swift.h")
+end
+
+task default: :build
