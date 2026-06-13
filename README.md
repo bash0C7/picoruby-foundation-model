@@ -34,13 +34,13 @@ FoundationModel.generate(prompt)
 
 The `example/` directory builds a single self-contained binary against upstream
 [picoruby/picoruby](https://github.com/picoruby/picoruby). The sample `app.rb`
-is embedded into the binary (via the `picoruby-bin-fmdemo` gem) and the Swift
+is embedded into the binary (via the `picoruby-foundation-model-example` gem) and the Swift
 glue is statically linked, so the result is one file with no script and no
 in-tree dylib to ship alongside:
 
 ```sh
 cd example
-rake build   # clones picoruby (first run) and builds example/build/host/bin/fmdemo
+rake build   # clones picoruby (first run); builds example/build/host/bin/picoruby-foundation-model-example
 rake run     # runs the binary (app.rb is baked in)
 ```
 
