@@ -29,6 +29,6 @@ MRuby::Build.new do |conf|
   conf.gembox "core"
   conf.gembox "stdlib"
 
-  conf.gem github: 'bash0C7/picoruby-foundation-model', branch: 'main'
+  conf.gem File.expand_path("..", __dir__)
   conf.gem "#{__dir__}/mrbgems/picoruby-foundation-model-example"
 end
